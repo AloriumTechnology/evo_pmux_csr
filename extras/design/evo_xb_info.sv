@@ -36,9 +36,9 @@ module evo_xb_info
     parameter EVO_XB_INFO_NUM_ADDR = 32'h0,  // Address of XB_INFO_NUM value
     parameter EVO_XB_INFO_NUM_VAL  = 32'h3,  // Number of additional XB_INFO regs
     parameter EVO_XB_INFO_VENDOR_ADDR = 32'h1, // Address and Value for Vendor name
-    parameter EVO_XB_INFO_VENDOR_VAL  = "ALO ",
+    parameter EVO_XB_INFO_VENDOR_VAL  = " ALO",
     parameter EVO_XB_INFO_MODEL_ADDR = 32'h2,  // Address and Value for product Model 
-    parameter EVO_XB_INFO_MODEL_VAL  = "EVO ",
+    parameter EVO_XB_INFO_MODEL_VAL  = " EVO",
     parameter EVO_XB_INFO_TYPE_ADDR = 32'h3,   // Address and Value for XB Type
     parameter EVO_XB_INFO_TYPE_VAL  = "PMUX"
     )
@@ -54,11 +54,12 @@ module evo_xb_info
     output logic [CSR_DWIDTH-1:0] avs_csr_readdata
     );
    
-   logic                          info_sel;
+   logic                          info_sel, info_re;
    logic [CSR_DWIDTH-1:0]         info_f;
    logic [CSR_DWIDTH-1:0]         info_val;
    
    always_comb info_sel  = (avs_csr_address[CSR_AWIDTH-1:0] == EVO_XB_INFO_ADDR);
+   always_comb info_re   = info_sel && avs_csr_read;
 
    always_ff @(posedge clk or negedge rstn) begin
       info_f <=  (!rstn)                     ? EVO_INFO_RST_VAL        : // reset  
@@ -85,7 +86,7 @@ module evo_xb_info
    
    // Assert bus outputs
    always_ff @(posedge clk) begin
-      avs_csr_readdatavalid <= info_sel;
+      avs_csr_readdatavalid <= info_re;
       avs_csr_readdata      <= ({CSR_DWIDTH{info_sel}} & info_val);
    end
    

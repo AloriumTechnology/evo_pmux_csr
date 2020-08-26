@@ -49,7 +49,6 @@ module evo_pmux_csr
     // Interface to evo_i2c_ctrl (Avalon MM Slave)
     input logic [CSR_AWIDTH-1:0]               avs_csr_address,
     input logic                                avs_csr_read, 
-    output logic                               avs_csr_waitresponse,
     output logic                               avs_csr_readdatavalid,
     output logic                               avs_csr_waitrequest,
     input logic                                avs_csr_write,
@@ -80,17 +79,6 @@ module evo_pmux_csr
    logic                                       en_sel,     en_we,     en_re; 
    logic [PORT_DWIDTH-1:0]                     in_f; 
    logic                                       in_sel,     in_we,     in_re; 
-   /* 
-   // --------------------------------------------------------------------------
-   // Write reg files to a known pattern
-   typedef enum                                logic [2:0]
-                                               {RFPAT_IDLE = 3'h1,
-                                                RFPAT_WR   = 3'h2
-                                                } rfpat_t;
-   rfpat_t rfpat_ns;
-   rfpat_t rfpat_ps;
-    */
-   
    
    //===========================================================================
    // CSR interface and register Logic: 
@@ -281,41 +269,6 @@ module evo_pmux_csr
          pmux_en_o[PORT_DWIDTH*i +: PORT_DWIDTH]  =  en_f[i];
       end
    end
-/*
-   //===============================================================================================
-   // Reg File Pattern Write
-   //===============================================================================================
-
-   // --------------------------------------------------------------------------
-   // --- Initialize STATE
-   // --------------------------------------------------------------------------
-   always_ff @(posedge clk or negedge reset_n) begin
-      if (!reset_n) rfpat_ps_f <= RFPAT_IDLE;
-      else rfpat_ps_f <= rfpat_ns;
-   end
-   
-   // --------------------------------------------------------------------------
-   // --- Next STATE control ---------------------------------------------------
-   // --------------------------------------------------------------------------
-   always_comb begin: rfpat_ns_ctrl
-      rfpat_ns = rfpat_ps_f;
-      unique case (rfpat_ps_f)
-        //----------------------------------------------------------------------
-        // IDLE state, all quiet
-        //----------------------------------------------------------------------
-        RFPAT_IDLE:    rfpat_ns = (ctl_f[1] == 1'b1) ? RFPAT_WR : // Write Pattern
-                                                       RFPAT_IDLE;
-
-        //----------------------------------------------------------------------
-        // Write Pattern Sequence
-        //----------------------------------------------------------------------
-        RFPAT_WR:       rfpat_ns = (??done??) ? RFPAT_DONE : RFPAT_WR; // Write patter to RF
-        RFPAT_DONE:     rfpat_ns = RFPAT_IDLE;
-        default:        rfpat_ns = RFPAT_IDLE;
-      endcase // unique case (rfpat_ps_f)
-   end // block: rfpat_ns_ctrl
-*/   
-            
 
 endmodule
    
